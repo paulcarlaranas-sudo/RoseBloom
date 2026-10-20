@@ -605,12 +605,12 @@ export const RomanticMusicPlayer: React.FC<RomanticMusicPlayerProps> = ({
 
   const placementStyles: Record<MusicPlacement, string> = {
     bottom: isMinimized
-      ? 'fixed bottom-4 right-4 z-40'
-      : 'fixed bottom-4 left-1/2 -translate-x-1/2 w-[94%] max-w-lg z-40',
+      ? 'fixed bottom-[calc(1rem+env(safe-area-inset-bottom,0px))] right-3 sm:right-4 z-40'
+      : 'fixed bottom-[calc(1rem+env(safe-area-inset-bottom,0px))] left-1/2 -translate-x-1/2 w-[calc(100%-1.25rem)] sm:w-[94%] max-w-lg z-40',
     top: isMinimized
-      ? 'fixed top-16 right-4 z-40'
-      : 'fixed top-16 left-1/2 -translate-x-1/2 w-[94%] max-w-lg z-40',
-    corner: 'fixed bottom-4 right-4 max-w-xs z-40',
+      ? 'fixed top-[calc(4rem+env(safe-area-inset-top,0px))] right-3 sm:right-4 z-40'
+      : 'fixed top-[calc(4rem+env(safe-area-inset-top,0px))] left-1/2 -translate-x-1/2 w-[calc(100%-1.25rem)] sm:w-[94%] max-w-lg z-40',
+    corner: 'fixed bottom-[calc(1rem+env(safe-area-inset-bottom,0px))] right-3 sm:right-4 max-w-xs z-40',
   };
 
   return (

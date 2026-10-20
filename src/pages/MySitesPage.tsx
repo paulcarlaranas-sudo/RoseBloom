@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { UserSiteProject } from '../types';
+import { UserSiteProject, RecipientPronoun } from '../types';
 import { siteService, encodeSiteForReceiver } from '../services/siteService';
 import { exportStandaloneHtml } from '../utils/exporter';
 import {
@@ -38,6 +38,8 @@ export const MySitesPage: React.FC<MySitesPageProps> = ({
   const [newTitle, setNewTitle] = useState<string>('');
   const [newGirlfriendName, setNewGirlfriendName] = useState<string>('');
   const [newSenderName, setNewSenderName] = useState<string>('');
+  const [newRecipientPronoun, setNewRecipientPronoun] = useState<RecipientPronoun>('her');
+  const [newRelationLabel, setNewRelationLabel] = useState<string>('Girlfriend');
   const [newDate, setNewDate] = useState<string>('');
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -48,7 +50,9 @@ export const MySitesPage: React.FC<MySitesPageProps> = ({
       newTitle,
       newGirlfriendName,
       newSenderName,
-      newDate
+      newDate,
+      newRecipientPronoun,
+      newRelationLabel
     );
     setIsCreating(false);
     onSelectSite(created.id);
@@ -99,7 +103,7 @@ export const MySitesPage: React.FC<MySitesPageProps> = ({
           className="inline-flex items-center gap-2 text-xs font-medium text-stone-600 hover:text-rose-700 transition-colors cursor-pointer"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Back to Current Letter Editor</span>
+          <span>Back to Home Portal</span>
         </button>
 
         <button
@@ -326,22 +330,54 @@ export const MySitesPage: React.FC<MySitesPageProps> = ({
                 <input
                   type="text"
                   required
-                  placeholder="e.g. 2nd Year Anniversary for Maya"
+                  placeholder="e.g. 2nd Year Anniversary for My Love"
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
                   className="w-full px-3 py-2 border border-rose-200 rounded-xl text-stone-800 text-xs focus:outline-none focus:ring-2 focus:ring-rose-300"
                 />
               </div>
 
+              <div>
+                <label className="block font-semibold text-stone-700 mb-1">
+                  Who is this letter for?
+                </label>
+                <select
+                  value={newRecipientPronoun}
+                  onChange={(e) => {
+                    const p = e.target.value as RecipientPronoun;
+                    let label = 'Girlfriend';
+                    if (p === 'his') label = 'Boyfriend';
+                    else if (p === 'their') label = 'Partner';
+                    setNewRecipientPronoun(p);
+                    setNewRelationLabel(label);
+                  }}
+                  className="w-full px-3 py-2 border border-rose-200 rounded-xl text-stone-800 text-xs focus:outline-none focus:ring-2 focus:ring-rose-300 font-medium"
+                >
+                  <option value="her">🌸 Her Name (Girlfriend / Wife / Fiancée)</option>
+                  <option value="his">🌿 His Name (Boyfriend / Husband / Fiancé)</option>
+                  <option value="their">✨ Their Name (Partner / Soulmate / Love)</option>
+                </select>
+              </div>
+
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block font-semibold text-stone-700 mb-1">
-                    Her Name
+                    {newRecipientPronoun === 'his'
+                      ? 'His Name'
+                      : newRecipientPronoun === 'their'
+                      ? "Partner's Name"
+                      : 'Her Name'}
                   </label>
                   <input
                     type="text"
                     required
-                    placeholder="e.g. Maya"
+                    placeholder={
+                      newRecipientPronoun === 'his'
+                        ? 'e.g. Liam'
+                        : newRecipientPronoun === 'their'
+                        ? 'e.g. Alex'
+                        : 'e.g. Maya'
+                    }
                     value={newGirlfriendName}
                     onChange={(e) => setNewGirlfriendName(e.target.value)}
                     className="w-full px-3 py-2 border border-rose-200 rounded-xl text-stone-800 text-xs focus:outline-none focus:ring-2 focus:ring-rose-300"

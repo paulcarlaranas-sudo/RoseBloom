@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import {
   Menu,
   X,
+  Home,
   Eye,
   Edit3,
   Share2,
@@ -99,6 +100,18 @@ export const TopNav: React.FC<TopNavProps> = ({
       <header className="sticky top-0 z-40 w-full bg-white/85 backdrop-blur-md border-b border-rose-100/80 transition-all font-sans-custom py-2 px-4 shadow-2xs">
         <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
           <div className="flex items-center gap-2 min-w-0">
+            <button
+              type="button"
+              onClick={() => {
+                onToggleReceiverMode();
+                onNavigate('portal');
+              }}
+              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-200/80 text-xs font-semibold transition-all cursor-pointer shadow-2xs"
+              title="Return to Home Portal"
+            >
+              <Home className="w-3.5 h-3.5 text-rose-600" />
+              <span className="hidden sm:inline">Home</span>
+            </button>
             <span className="text-base select-none">🌹</span>
             <div className="truncate">
               <span className="font-cormorant text-base sm:text-lg font-bold text-rose-950 truncate">
@@ -150,17 +163,35 @@ export const TopNav: React.FC<TopNavProps> = ({
   return (
     <header className="sticky top-0 z-40 w-full bg-white/90 backdrop-blur-md border-b border-rose-100 transition-all font-sans-custom">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-4">
-        {/* Brand wordmark */}
-        <button
-          type="button"
-          onClick={() => onNavigate('home')}
-          className="font-cormorant text-xl font-bold tracking-tight text-rose-950 whitespace-nowrap shrink-0 flex items-center gap-1.5 cursor-pointer text-left group"
-        >
-          <span className="group-hover:text-rose-700 transition-colors">Rosebloom</span>
-          <span className="text-xs font-sans-custom font-normal text-rose-500 italic bg-rose-50 px-2 py-0.5 rounded-full border border-rose-100">
-            Monthsary
-          </span>
-        </button>
+        {/* Brand wordmark & Home Navigation */}
+        <div className="flex items-center gap-2 shrink-0">
+          <button
+            type="button"
+            onClick={() => onNavigate('portal')}
+            className="font-cormorant text-xl font-bold tracking-tight text-rose-950 whitespace-nowrap shrink-0 flex items-center gap-1.5 cursor-pointer text-left group"
+            title="Go to Home Portal"
+          >
+            <span className="group-hover:text-rose-700 transition-colors">Rosebloom</span>
+            <span className="text-xs font-sans-custom font-normal text-rose-500 italic bg-rose-50 px-2 py-0.5 rounded-full border border-rose-100">
+              Monthsary
+            </span>
+          </button>
+
+          {/* Dedicated Home icon button right next to brand */}
+          <button
+            type="button"
+            onClick={() => onNavigate('portal')}
+            className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-medium transition-all cursor-pointer ${
+              currentRoute === 'portal'
+                ? 'bg-rose-100/90 text-rose-950 font-semibold border border-rose-200 shadow-2xs'
+                : 'text-stone-600 hover:text-rose-950 hover:bg-rose-50 border border-transparent'
+            }`}
+            title="Go to Home Portal"
+          >
+            <Home className="w-3.5 h-3.5 text-rose-600" />
+            <span className="hidden sm:inline">Home</span>
+          </button>
+        </div>
 
         {/* Primary Right Actions & 3-Bar Hamburger Menu */}
         <div className="flex items-center gap-2 sm:gap-3 shrink-0">
@@ -234,7 +265,7 @@ export const TopNav: React.FC<TopNavProps> = ({
 
             {/* 3-Bar Dropdown Menu Popup */}
             {isMenuOpen && (
-              <div className="absolute right-0 top-full mt-2 w-72 sm:w-80 bg-white/98 backdrop-blur-xl rounded-2xl shadow-xl shadow-rose-950/10 border border-rose-100/90 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-150 divide-y divide-rose-50">
+              <div className="absolute right-0 top-full mt-2 w-[calc(100vw-2rem)] max-w-xs sm:w-80 bg-white/98 backdrop-blur-xl rounded-2xl shadow-xl shadow-rose-950/10 border border-rose-100/90 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-150 divide-y divide-rose-50">
                 {/* User Profile Card Header */}
                 {currentUser && (
                   <div className="p-3.5 bg-gradient-to-r from-rose-50/70 via-rose-50/40 to-white flex items-center justify-between gap-3">
@@ -291,6 +322,26 @@ export const TopNav: React.FC<TopNavProps> = ({
                   <div className="px-2 py-1 text-[10px] font-bold text-stone-400 uppercase tracking-wider">
                     Pages
                   </div>
+
+                  <button
+                    type="button"
+                    onClick={() => handleAction(() => onNavigate('portal'))}
+                    className={`w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-xs font-medium transition-colors cursor-pointer ${
+                      currentRoute === 'portal'
+                        ? 'bg-rose-50 text-rose-900 font-semibold'
+                        : 'text-stone-700 hover:bg-rose-50/60 hover:text-stone-900'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <Home className={`w-4 h-4 ${currentRoute === 'portal' ? 'text-rose-600' : 'text-stone-400'}`} />
+                      <span>Home Portal</span>
+                    </div>
+                    {currentRoute === 'portal' && (
+                      <span className="text-[10px] font-semibold text-rose-600 bg-rose-100/80 px-2 py-0.5 rounded-full">
+                        Active
+                      </span>
+                    )}
+                  </button>
 
                   <button
                     type="button"

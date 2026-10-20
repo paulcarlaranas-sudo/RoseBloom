@@ -1,6 +1,6 @@
 import { doc, getDoc, setDoc, getDocs, collection, deleteDoc } from 'firebase/firestore';
 import { db } from '../firebase/config';
-import { CoupleData, DEFAULT_COUPLE_DATA, PlaylistItem, UserSiteProject } from '../types';
+import { CoupleData, DEFAULT_COUPLE_DATA, PlaylistItem, UserSiteProject, RecipientPronoun } from '../types';
 import { authService } from './authService';
 
 const SITES_PREFIX = 'rosebloom_user_sites_';
@@ -376,7 +376,9 @@ class SiteService {
     title: string,
     girlfriendName: string,
     senderName: string,
-    monthsaryDate: string
+    monthsaryDate: string,
+    recipientPronoun: RecipientPronoun = 'her',
+    recipientRelationLabel: string = 'Girlfriend'
   ): UserSiteProject {
     const newSiteId = 'site_' + Math.random().toString(36).substring(2, 9);
     const today = new Date().toISOString().split('T')[0];
@@ -388,6 +390,8 @@ class SiteService {
       ...DEFAULT_COUPLE_DATA,
       girlfriendName: partnerName,
       senderName: authorName,
+      recipientPronoun,
+      recipientRelationLabel,
       monthsaryDate: monthsaryDate.trim() || 'Today',
       monthsaryGreeting: `Happy Monthsary, ${partnerName}`,
       letter: {
@@ -402,6 +406,8 @@ class SiteService {
       title: title.trim() || `${partnerName}'s Monthsary Site`,
       girlfriendName: partnerName,
       senderName: authorName,
+      recipientPronoun,
+      recipientRelationLabel,
       createdAt: today,
       updatedAt: today,
       ownerId: this.currentUserId,

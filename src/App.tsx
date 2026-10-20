@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { AppRoute, CoupleData, DEFAULT_COUPLE_DATA, ThemeConfig, UserProfile, UserSiteProject, PasscodeConfig } from './types';
+import { AppRoute, CoupleData, DEFAULT_COUPLE_DATA, ThemeConfig, UserProfile, UserSiteProject, PasscodeConfig, RecipientPronoun } from './types';
 import { TopNav } from './components/TopNav';
 import { LandingHero } from './components/LandingHero';
 import { RoseBloomExperience } from './components/RoseBloomExperience';
@@ -19,6 +19,7 @@ import { FloatingPetalsOverlay } from './components/FloatingPetalsOverlay';
 import { AuthPage } from './pages/AuthPage';
 import { AccountSettingsPage } from './pages/AccountSettingsPage';
 import { MySitesPage } from './pages/MySitesPage';
+import { PortalHub } from './components/PortalHub';
 import { ReasonsWhyILoveYou } from './components/ReasonsWhyILoveYou';
 import { exportStandaloneHtml } from './utils/exporter';
 import { romanticAudio } from './utils/audioEngine';
@@ -28,7 +29,7 @@ import { AndroidInstallModal } from './components/AndroidInstallModal';
 
 export default function App() {
   const [currentUser, setCurrentUser] = useState<UserProfile | null>(() => authService.getCurrentUser());
-  const [currentRoute, setCurrentRoute] = useState<AppRoute>('home');
+  const [currentRoute, setCurrentRoute] = useState<AppRoute>(() => (authService.getCurrentUser() ? 'portal' : 'home'));
   const [sites, setSites] = useState<UserSiteProject[]>(() => siteService.getSites());
   const [activeSite, setActiveSite] = useState<UserSiteProject>(() => siteService.getActiveSite());
   const [data, setData] = useState<CoupleData>(() => activeSite.data || DEFAULT_COUPLE_DATA);
@@ -87,6 +88,10 @@ export default function App() {
       setCurrentRoute('account');
     } else if (path === '/my-work' || hash === '#my-work' || path === '/my-sites' || hash === '#my-sites') {
       setCurrentRoute('my-work');
+    } else if (path === '/portal' || hash === '#portal') {
+      setCurrentRoute('portal');
+    } else if (path === '/home' || hash === '#home' || hash === '#editor' || hash === '#letter') {
+      setCurrentRoute('home');
     }
   }, []);
 
@@ -148,6 +153,18 @@ export default function App() {
   const handlePasscodeSuccess = async () => {
     setIsPasscodeUnlocked(true);
     setShowPasscodeModal(false);
+    if (currentRoute === 'portal') {
+      setCurrentRoute('home');
+    }
+    await romanticAudio.play();
+    setAutoplayBlocked(false);
+    setShowBloomExperience(true);
+  };
+
+  const handleExploreDemo = async () => {
+    updateCurrentData(DEFAULT_COUPLE_DATA);
+    setIsPasscodeUnlocked(true);
+    setCurrentRoute('home');
     await romanticAudio.play();
     setAutoplayBlocked(false);
     setShowBloomExperience(true);
@@ -186,6 +203,8 @@ export default function App() {
   const handleUpdateHeader = (updated: {
     senderName?: string;
     girlfriendName?: string;
+    recipientPronoun?: RecipientPronoun;
+    recipientRelationLabel?: string;
     monthsaryGreeting?: string;
     monthsaryDate?: string;
     startMonth?: string;
@@ -264,7 +283,7 @@ export default function App() {
 
   // MANDATORY AUTH GATE: When opening app, require sign in first unless viewing as receiver
   if (!currentUser && !isReceiverMode) {
-    return <AuthPage onSignedIn={() => setCurrentRoute('home')} />;
+    return <AuthPage onSignedIn={() => setCurrentRoute('portal')} />;
   }
 
   return (
@@ -285,6 +304,8 @@ export default function App() {
         currentRoute={currentRoute}
         currentUser={currentUser}
         isReceiverMode={isReceiverMode}
+        girlfriendName={data.girlfriendName}
+        senderName={data.senderName}
         passcodeEnabled={data.passcode?.enabled}
         onNavigate={(route) => setCurrentRoute(route)}
         onToggleReceiverMode={() => setIsReceiverMode(!isReceiverMode)}
@@ -311,12 +332,35 @@ export default function App() {
         />
       )}
 
+      {/* ROUTE 0: Romantic Portal Hub (/portal) */}
+      {currentRoute === 'portal' && (
+        <main className="relative z-10 pt-4 pb-28">
+          <PortalHub
+            currentUser={currentUser}
+            activeData={data}
+            onWriteLetter={() => setCurrentRoute('home')}
+            onOpenWithPasskey={() => {
+              setIsAuthorPreviewPasscode(false);
+              setShowPasscodeModal(true);
+            }}
+            onExploreDemo={handleExploreDemo}
+            onNavigateMySites={() => setCurrentRoute('my-work')}
+            onNavigateAccount={() => setCurrentRoute('account')}
+            onPreviewReceiver={() => {
+              setIsReceiverMode(true);
+              setCurrentRoute('home');
+            }}
+            onDownloadHtml={() => exportStandaloneHtml(data)}
+          />
+        </main>
+      )}
+
       {/* ROUTE 1: Account Settings Page (/account) */}
       {currentRoute === 'account' && currentUser && (
         <main className="relative z-10 pt-4 pb-28">
           <AccountSettingsPage
             user={currentUser}
-            onNavigateHome={() => setCurrentRoute('home')}
+            onNavigateHome={() => setCurrentRoute('portal')}
             onNavigateSites={() => setCurrentRoute('my-work')}
             onSignOut={() => authService.signOut()}
           />
@@ -331,7 +375,7 @@ export default function App() {
             activeSite={activeSite}
             onSelectSite={handleSelectSite}
             onPreviewReceiver={handlePreviewReceiver}
-            onNavigateHome={() => setCurrentRoute('home')}
+            onNavigateHome={() => setCurrentRoute('portal')}
           />
         </main>
       )}
@@ -379,7 +423,7 @@ export default function App() {
           </div>
 
           {/* Four Cherished Moments Photo Gallery */}
-          <div id="gallery" className="mt-6 pb-28">
+          <div id="gallery" className="mt-6 pb-36 sm:pb-32">
             <PhotoGallery
               photos={data.photos}
               isReceiverMode={isReceiverMode}

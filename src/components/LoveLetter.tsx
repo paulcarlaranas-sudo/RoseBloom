@@ -106,7 +106,7 @@ export const LoveLetter: React.FC<LoveLetterProps> = ({
 
       {/* Parchment Love Letter Card with Authentic Stationery Unfolding */}
       <div
-        className={`relative bg-[#FFFDF9] rounded-3xl p-6 sm:p-12 shadow-2xl border border-rose-200/80 overflow-hidden transition-all duration-700 ${
+        className={`relative bg-[#FFFDF9] rounded-2xl sm:rounded-3xl p-4 sm:p-10 md:p-12 shadow-2xl border border-rose-200/80 overflow-hidden transition-all duration-700 ${
           isUnfolding
             ? 'scale-y-95 -rotate-1 shadow-md opacity-90'
             : 'scale-y-100 rotate-0 shadow-2xl opacity-100'
@@ -146,7 +146,7 @@ export const LoveLetter: React.FC<LoveLetterProps> = ({
         <div className="absolute bottom-0 left-0 w-36 h-36 bg-radial from-rose-100/40 to-transparent pointer-events-none rounded-tr-full" />
 
         {/* Double hairline gold/rose inner border */}
-        <div className="relative border border-rose-200/60 rounded-2xl p-6 sm:p-10 bg-white/40 backdrop-blur-[2px]">
+        <div className="relative border border-rose-200/60 rounded-xl sm:rounded-2xl p-4 sm:p-8 md:p-10 bg-white/40 backdrop-blur-[2px]">
           {/* Interactive Embossed Wax Seal Badge */}
           <div className="flex justify-center -mt-2 mb-4">
             <WaxSeal

@@ -62,9 +62,13 @@ export interface ThemeConfig {
   playerPlacement: MusicPlacement;
 }
 
+export type RecipientPronoun = 'her' | 'his' | 'their';
+
 export interface CoupleData {
   senderName: string;
   girlfriendName: string;
+  recipientPronoun?: RecipientPronoun; // 'her' | 'his' | 'their'
+  recipientRelationLabel?: string; // e.g. "Girlfriend", "Boyfriend", "Partner"
   monthsaryGreeting: string;
   monthsaryDate: string;
   startMonth?: string; // YYYY-MM e.g. "2024-10"
@@ -105,6 +109,8 @@ export interface UserSiteProject {
   title: string;
   girlfriendName: string;
   senderName: string;
+  recipientPronoun?: RecipientPronoun;
+  recipientRelationLabel?: string;
   createdAt: string;
   updatedAt: string;
   data: CoupleData;
@@ -115,7 +121,7 @@ export interface UserSiteProject {
   isPrivate?: boolean;
 }
 
-export type AppRoute = 'home' | 'account' | 'my-work';
+export type AppRoute = 'home' | 'account' | 'my-work' | 'portal';
 
 /**
  * Automatically calculates exact days, months, and years from first month/date to this month/date
@@ -188,6 +194,8 @@ export const DEFAULT_PLAYLIST: PlaylistItem[] = [
 export const DEFAULT_COUPLE_DATA: CoupleData = {
   senderName: 'Liam',
   girlfriendName: 'Maya',
+  recipientPronoun: 'her',
+  recipientRelationLabel: 'Girlfriend',
   monthsaryGreeting: 'Happy Monthsary, My Love',
   monthsaryDate: 'October 24, 2024',
   startMonth: '2024-10',

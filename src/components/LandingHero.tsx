@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { CoupleData, calculateDaysBetween, PasscodeConfig } from '../types';
-import { Heart, Sparkles, Calendar, Edit3, ArrowRight, Eye, Clock, Lock, Music, ExternalLink, Smartphone, Download } from 'lucide-react';
+import { CoupleData, calculateDaysBetween, PasscodeConfig, RecipientPronoun } from '../types';
+import { Heart, Sparkles, Calendar, Edit3, ArrowRight, Eye, Clock, Lock, Music, ExternalLink, Smartphone, Download, UserCheck } from 'lucide-react';
 
 interface LandingHeroProps {
   data: CoupleData;
@@ -9,6 +9,8 @@ interface LandingHeroProps {
   onUpdateHeader: (updated: {
     senderName?: string;
     girlfriendName?: string;
+    recipientPronoun?: RecipientPronoun;
+    recipientRelationLabel?: string;
     monthsaryGreeting?: string;
     monthsaryDate?: string;
     startMonth?: string;
@@ -41,6 +43,8 @@ export const LandingHero: React.FC<LandingHeroProps> = ({
   const [editValues, setEditValues] = useState({
     senderName: data.senderName,
     girlfriendName: data.girlfriendName,
+    recipientPronoun: data.recipientPronoun || 'her',
+    recipientRelationLabel: data.recipientRelationLabel || 'Girlfriend',
     monthsaryGreeting: data.monthsaryGreeting,
     monthsaryDate: data.monthsaryDate,
     startMonth: data.startMonth || '2024-10',
@@ -83,6 +87,8 @@ export const LandingHero: React.FC<LandingHeroProps> = ({
     setEditValues({
       senderName: data.senderName,
       girlfriendName: data.girlfriendName,
+      recipientPronoun: data.recipientPronoun || 'her',
+      recipientRelationLabel: data.recipientRelationLabel || 'Girlfriend',
       monthsaryGreeting: data.monthsaryGreeting,
       monthsaryDate: data.monthsaryDate,
       startMonth: data.startMonth || '2024-10',
@@ -315,6 +321,32 @@ export const LandingHero: React.FC<LandingHeroProps> = ({
               {/* TAB 1: GREETING & NAMES */}
               {activeTab === 'details' && (
                 <div className="space-y-3.5">
+                  {/* Recipient Gender/Role Dropdown */}
+                  <div>
+                    <label className="block font-semibold text-stone-700 mb-1">
+                      Who is this letter for?
+                    </label>
+                    <select
+                      value={editValues.recipientPronoun}
+                      onChange={(e) => {
+                        const p = e.target.value as RecipientPronoun;
+                        let relation = 'Girlfriend';
+                        if (p === 'his') relation = 'Boyfriend';
+                        if (p === 'their') relation = 'Partner';
+                        setEditValues({
+                          ...editValues,
+                          recipientPronoun: p,
+                          recipientRelationLabel: relation,
+                        });
+                      }}
+                      className="w-full px-3 py-2 border border-rose-200 rounded-xl text-xs bg-white text-stone-800 font-medium cursor-pointer focus:outline-none focus:ring-2 focus:ring-rose-300"
+                    >
+                      <option value="her">🌸 Her Name (Girlfriend / Wife / Fiancée)</option>
+                      <option value="his">🌿 His Name (Boyfriend / Husband / Fiancé)</option>
+                      <option value="their">✨ Their Name (Partner / Soulmate / Love)</option>
+                    </select>
+                  </div>
+
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <label className="block font-semibold text-stone-700 mb-1">
@@ -325,17 +357,29 @@ export const LandingHero: React.FC<LandingHeroProps> = ({
                         value={editValues.senderName}
                         onChange={(e) => setEditValues({ ...editValues, senderName: e.target.value })}
                         className="w-full px-3 py-2 border border-rose-200 rounded-xl text-xs bg-white"
+                        placeholder="e.g. Liam"
                       />
                     </div>
                     <div>
                       <label className="block font-semibold text-stone-700 mb-1">
-                        Her Name / Nickname
+                        {editValues.recipientPronoun === 'his'
+                          ? 'His Name / Nickname'
+                          : editValues.recipientPronoun === 'their'
+                          ? "Partner's Name / Nickname"
+                          : 'Her Name / Nickname'}
                       </label>
                       <input
                         type="text"
                         value={editValues.girlfriendName}
                         onChange={(e) => setEditValues({ ...editValues, girlfriendName: e.target.value })}
                         className="w-full px-3 py-2 border border-rose-200 rounded-xl text-xs bg-white"
+                        placeholder={
+                          editValues.recipientPronoun === 'his'
+                            ? 'e.g. Liam'
+                            : editValues.recipientPronoun === 'their'
+                            ? 'e.g. Alex'
+                            : 'e.g. Maya'
+                        }
                       />
                     </div>
                   </div>
