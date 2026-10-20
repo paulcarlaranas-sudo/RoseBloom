@@ -39,9 +39,9 @@ export const SharePublishModal: React.FC<SharePublishModalProps> = ({
   const qrCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const [copied, setCopied] = useState<boolean>(false);
   const [copiedCode, setCopiedCode] = useState<boolean>(false);
-  const [activeTab, setActiveTab] = useState<'link' | 'qr' | 'privacy'>('link');
+  const [activeTab, setActiveTab] = useState<'code' | 'link' | 'qr' | 'privacy'>('code');
 
-  const shareCode = activeSite?.shareCode || 'ROSE-1024';
+  const shareCode = activeSite?.shareCode || 'ROSE1';
   const receiverToken = activeSite?.receiverToken || 'rec_maya_forever';
 
   // Compute the live public receiver link with portable payload & receiver identifiers
@@ -217,6 +217,18 @@ export const SharePublishModal: React.FC<SharePublishModalProps> = ({
         {/* Tab Switcher */}
         <div className="flex items-center gap-1 p-1 bg-rose-50 rounded-xl mb-6">
           <button
+            type="button"
+            onClick={() => setActiveTab('code')}
+            className={`flex-1 py-2 text-xs font-medium rounded-lg transition-all cursor-pointer ${
+              activeTab === 'code'
+                ? 'bg-white text-rose-950 shadow-xs font-semibold'
+                : 'text-stone-600 hover:text-stone-900'
+            }`}
+          >
+            Letter Code
+          </button>
+          <button
+            type="button"
             onClick={() => setActiveTab('link')}
             className={`flex-1 py-2 text-xs font-medium rounded-lg transition-all cursor-pointer ${
               activeTab === 'link'
@@ -227,6 +239,7 @@ export const SharePublishModal: React.FC<SharePublishModalProps> = ({
             Private Link
           </button>
           <button
+            type="button"
             onClick={() => setActiveTab('qr')}
             className={`flex-1 py-2 text-xs font-medium rounded-lg transition-all cursor-pointer ${
               activeTab === 'qr'
@@ -234,9 +247,10 @@ export const SharePublishModal: React.FC<SharePublishModalProps> = ({
                 : 'text-stone-600 hover:text-stone-900'
             }`}
           >
-            Phone QR Code
+            QR Code
           </button>
           <button
+            type="button"
             onClick={() => setActiveTab('privacy')}
             className={`flex-1 py-2 text-xs font-medium rounded-lg transition-all cursor-pointer ${
               activeTab === 'privacy'
@@ -244,9 +258,62 @@ export const SharePublishModal: React.FC<SharePublishModalProps> = ({
                 : 'text-stone-600 hover:text-stone-900'
             }`}
           >
-            Security &amp; Passkey
+            Security &amp; PIN
           </button>
         </div>
+
+        {/* Tab 0: 5-Character Letter Code */}
+        {activeTab === 'code' && (
+          <div className="space-y-4">
+            <div className="p-5 rounded-2xl bg-gradient-to-br from-rose-50/80 via-white to-pink-50/50 border border-rose-200 text-center">
+              <span className="text-[11px] font-semibold text-rose-800 uppercase tracking-widest block mb-2">
+                Your 5-Character Letter Code
+              </span>
+              <div className="inline-flex items-center gap-3 my-2 px-6 py-3 rounded-2xl bg-white border-2 border-rose-300 shadow-sm">
+                <span className="font-mono text-3xl font-extrabold tracking-[0.25em] text-rose-950">
+                  {shareCode}
+                </span>
+              </div>
+              <p className="text-xs text-stone-600 mt-2 max-w-sm mx-auto leading-relaxed">
+                Give this code to <span className="font-semibold text-rose-950">{data.girlfriendName}</span>. She can open this letter on any phone, laptop, or tablet by clicking <span className="font-semibold text-rose-950">"For Recipients"</span> on the home page.
+              </p>
+              <div className="mt-4 flex flex-wrap justify-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleCopyCode}
+                  className="flex items-center gap-2 px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-semibold shadow-md shadow-rose-200 cursor-pointer transition-all"
+                >
+                  {copiedCode ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                  <span>{copiedCode ? 'Code Copied!' : 'Copy 5-Character Code'}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    const text = `Hey ${data.girlfriendName} 💕 I wrote a special private love letter for you! Open it at ${baseUrl} and enter letter code: ${shareCode}${
+                      data.passcode?.enabled ? ` (Passcode: ${data.passcode?.code || '1024'})` : ''
+                    }\nHappy Monthsary! 🌹`;
+                    await navigator.clipboard.writeText(text);
+                    setCopiedCode(true);
+                    setTimeout(() => setCopiedCode(false), 2500);
+                  }}
+                  className="flex items-center gap-1.5 px-4 py-2.5 bg-white hover:bg-rose-50 text-rose-900 border border-rose-200 rounded-xl text-xs font-medium cursor-pointer transition-colors"
+                >
+                  <Share2 className="w-3.5 h-3.5 text-rose-600" />
+                  <span>Copy Message for {data.girlfriendName}</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Cross-Device Cloud Sync Notice */}
+            <div className="p-3.5 rounded-2xl bg-stone-50 border border-stone-200/80 flex items-start gap-2.5 text-xs text-stone-600">
+              <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+              <div>
+                <span className="font-semibold text-stone-900">Unique &amp; Non-Duplicable: </span>
+                This 5-character code links exclusively to this letter and is indexed in Cloud Firestore. No one else can guess or tamper with your romantic memories.
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Tab 1: Direct Link */}
         {activeTab === 'link' && (

@@ -26,6 +26,7 @@ import { romanticAudio } from './utils/audioEngine';
 import { authService } from './services/authService';
 import { siteService } from './services/siteService';
 import { AndroidInstallModal } from './components/AndroidInstallModal';
+import { ReceiverCodeModal } from './components/ReceiverCodeModal';
 
 export default function App() {
   const [currentUser, setCurrentUser] = useState<UserProfile | null>(() => authService.getCurrentUser());
@@ -40,6 +41,7 @@ export default function App() {
   const [isCustomizerOpen, setIsCustomizerOpen] = useState<boolean>(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState<boolean>(false);
   const [isAndroidModalOpen, setIsAndroidModalOpen] = useState<boolean>(false);
+  const [showReceiverCodeModal, setShowReceiverCodeModal] = useState<boolean>(false);
   const [autoplayBlocked, setAutoplayBlocked] = useState<boolean>(false);
 
   // Passcode verification state for receiver
@@ -153,12 +155,31 @@ export default function App() {
   const handlePasscodeSuccess = async () => {
     setIsPasscodeUnlocked(true);
     setShowPasscodeModal(false);
-    if (currentRoute === 'portal') {
-      setCurrentRoute('home');
-    }
+    setIsReceiverMode(true);
+    setCurrentRoute('home');
     await romanticAudio.play();
     setAutoplayBlocked(false);
     setShowBloomExperience(true);
+  };
+
+  const handleLetterUnlockedFromCode = async (unlockedSite: UserSiteProject) => {
+    setShowReceiverCodeModal(false);
+    siteService.setActiveSite(unlockedSite.id);
+    setActiveSite(unlockedSite);
+    setData(unlockedSite.data);
+
+    // If the letter has a 4-digit secret passcode enabled, prompt for it next
+    if (unlockedSite.data.passcode?.enabled) {
+      setIsAuthorPreviewPasscode(false);
+      setShowPasscodeModal(true);
+    } else {
+      setIsPasscodeUnlocked(true);
+      setIsReceiverMode(true);
+      setCurrentRoute('home');
+      await romanticAudio.play();
+      setAutoplayBlocked(false);
+      setShowBloomExperience(true);
+    }
   };
 
   const handleExploreDemo = async () => {
@@ -306,11 +327,13 @@ export default function App() {
         isReceiverMode={isReceiverMode}
         girlfriendName={data.girlfriendName}
         senderName={data.senderName}
+        shareCode={activeSite?.shareCode}
         passcodeEnabled={data.passcode?.enabled}
         onNavigate={(route) => setCurrentRoute(route)}
         onToggleReceiverMode={() => setIsReceiverMode(!isReceiverMode)}
         onOpenCustomizer={() => setIsCustomizerOpen(true)}
         onOpenShareModal={() => setIsShareModalOpen(true)}
+        onOpenReceiverCodeModal={() => setShowReceiverCodeModal(true)}
         onOpenAndroidModal={() => setIsAndroidModalOpen(true)}
         onOpenPasscodeModal={handleOpenPasscodeTest}
         onDownloadWebsite={() => exportStandaloneHtml(data)}
@@ -339,10 +362,7 @@ export default function App() {
             currentUser={currentUser}
             activeData={data}
             onWriteLetter={() => setCurrentRoute('home')}
-            onOpenWithPasskey={() => {
-              setIsAuthorPreviewPasscode(false);
-              setShowPasscodeModal(true);
-            }}
+            onOpenWithPasskey={() => setShowReceiverCodeModal(true)}
             onExploreDemo={handleExploreDemo}
             onNavigateMySites={() => setCurrentRoute('my-work')}
             onNavigateAccount={() => setCurrentRoute('account')}

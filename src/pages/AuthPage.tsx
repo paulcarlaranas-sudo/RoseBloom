@@ -37,19 +37,6 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onSignedIn }) => {
     }
   };
 
-  const handleDemoSignIn = async () => {
-    setError(null);
-    setLoading(true);
-    try {
-      await authService.loadSampleDemoUser();
-      onSignedIn();
-    } catch {
-      setError('Could not load demo user.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <div className="relative min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-[#FAF7F5] via-[#FFF3F6] to-[#FDEEF2] overflow-hidden">
       {/* Floating Glowing Stardust Overlay */}
@@ -243,18 +230,6 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onSignedIn }) => {
             <ArrowRight className="w-4 h-4" />
           </button>
         </form>
-
-        {/* Demo credentials hint */}
-        <div className="mt-5 pt-4 border-t border-rose-100 flex items-center justify-between text-[11px] text-stone-500 font-sans-custom">
-          <span>Need a quick preview?</span>
-          <button
-            type="button"
-            onClick={handleDemoSignIn}
-            className="text-rose-600 hover:text-rose-800 font-medium cursor-pointer"
-          >
-            Open Sample Demo Workspace
-          </button>
-        </div>
       </div>
 
       {/* Google Sign In Chooser / Entry Modal */}

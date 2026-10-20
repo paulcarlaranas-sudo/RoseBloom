@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { LetterContent } from '../types';
-import { Edit3, RotateCcw, Heart, Check, BookOpen, Flower2 } from 'lucide-react';
+import { Edit3, RotateCcw, Heart, Check, BookOpen, Flower2, Share2, Sparkles } from 'lucide-react';
 import { BotanicalCorner } from './BotanicalFiligree';
 import { WaxSeal } from './WaxSeal';
 
@@ -11,6 +11,7 @@ interface LoveLetterProps {
   isReceiverMode: boolean;
   onUpdateLetter: (updated: Partial<LetterContent>) => void;
   onReplayBloom: () => void;
+  onOpenShareModal?: () => void;
 }
 
 export const LoveLetter: React.FC<LoveLetterProps> = ({
@@ -20,6 +21,7 @@ export const LoveLetter: React.FC<LoveLetterProps> = ({
   isReceiverMode,
   onUpdateLetter,
   onReplayBloom,
+  onOpenShareModal,
 }) => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [tempLetter, setTempLetter] = useState<LetterContent>(letter);
@@ -286,20 +288,42 @@ export const LoveLetter: React.FC<LoveLetterProps> = ({
                 </div>
               </div>
 
-              <div className="flex justify-end gap-2 pt-4">
-                <button
-                  onClick={() => setIsEditing(false)}
-                  className="px-4 py-2 text-stone-600 hover:text-stone-800 text-xs font-medium cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleSave}
-                  className="flex items-center gap-1.5 px-4 py-2 bg-rose-500 hover:bg-rose-600 text-white rounded-lg text-xs font-medium cursor-pointer shadow-sm"
-                >
-                  <Check className="w-3.5 h-3.5" />
-                  <span>Save Letter</span>
-                </button>
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-4 border-t border-rose-100">
+                <span className="text-[11px] text-stone-500 italic flex items-center gap-1">
+                  <Sparkles className="w-3 h-3 text-amber-500" />
+                  <span>Your letter is unique and cannot be opened without its code.</span>
+                </span>
+
+                <div className="flex items-center justify-end gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsEditing(false)}
+                    className="px-3.5 py-2 text-stone-600 hover:text-stone-800 text-xs font-medium cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleSave}
+                    className="flex items-center gap-1.5 px-3.5 py-2 bg-rose-100 hover:bg-rose-200 text-rose-800 rounded-xl text-xs font-semibold cursor-pointer transition-colors"
+                  >
+                    <Check className="w-3.5 h-3.5" />
+                    <span>Save Draft</span>
+                  </button>
+                  {onOpenShareModal && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        handleSave();
+                        onOpenShareModal();
+                      }}
+                      className="flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-rose-600 to-rose-700 hover:from-rose-700 hover:to-rose-800 text-white rounded-xl text-xs font-semibold shadow-md shadow-rose-200/80 cursor-pointer transition-all"
+                    >
+                      <Share2 className="w-3.5 h-3.5" />
+                      <span>Done &amp; Share (Code, Link, QR)</span>
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           )}
@@ -310,6 +334,7 @@ export const LoveLetter: React.FC<LoveLetterProps> = ({
           <div className="flex items-center gap-2">
             {/* Read my letter again button (unfolds & reveals without full bloom replay) */}
             <button
+              type="button"
               onClick={handleReadAgain}
               className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-200/80 transition-all cursor-pointer font-medium shadow-xs"
               title="Gently unfold and reveal the letter again"
@@ -320,6 +345,7 @@ export const LoveLetter: React.FC<LoveLetterProps> = ({
 
             {/* Replay Rose Animation Button */}
             <button
+              type="button"
               onClick={onReplayBloom}
               className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-white hover:bg-rose-50 text-rose-800 border border-rose-200 transition-colors cursor-pointer font-medium"
               title="Replay the Rose Bloom and Petal Rush sequence"
@@ -329,17 +355,34 @@ export const LoveLetter: React.FC<LoveLetterProps> = ({
             </button>
           </div>
 
-          {!isReceiverMode && !isEditing && (
-            <button
-              onClick={() => {
-                setTempLetter(letter);
-                setIsEditing(true);
-              }}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-white hover:bg-rose-50 text-rose-700 border border-rose-200 transition-colors cursor-pointer font-medium"
-            >
-              <Edit3 className="w-3.5 h-3.5" />
-              <span>Edit Letter Content</span>
-            </button>
+          {!isReceiverMode && (
+            <div className="flex items-center gap-2">
+              {!isEditing && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setTempLetter(letter);
+                    setIsEditing(true);
+                  }}
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-white hover:bg-rose-50 text-rose-700 border border-rose-200 transition-colors cursor-pointer font-medium"
+                >
+                  <Edit3 className="w-3.5 h-3.5" />
+                  <span>Edit Letter</span>
+                </button>
+              )}
+
+              {onOpenShareModal && (
+                <button
+                  type="button"
+                  onClick={onOpenShareModal}
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-gradient-to-r from-rose-600 to-rose-700 hover:from-rose-700 hover:to-rose-800 text-white font-semibold shadow-xs hover:shadow-md transition-all cursor-pointer"
+                  title="Share this letter via unique 5-character Code, Link, or QR code"
+                >
+                  <Share2 className="w-3.5 h-3.5" />
+                  <span>Done Editing — Share Letter</span>
+                </button>
+              )}
+            </div>
           )}
         </div>
       </div>

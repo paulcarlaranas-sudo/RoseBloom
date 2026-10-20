@@ -28,6 +28,7 @@ interface TopNavProps {
   isReceiverMode: boolean;
   girlfriendName?: string;
   senderName?: string;
+  shareCode?: string;
   passcodeEnabled?: boolean;
   onNavigate: (route: AppRoute) => void;
   onToggleReceiverMode: () => void;
@@ -47,6 +48,7 @@ export const TopNav: React.FC<TopNavProps> = ({
   isReceiverMode,
   girlfriendName = 'My Love',
   senderName = 'Me',
+  shareCode,
   passcodeEnabled = false,
   onNavigate,
   onToggleReceiverMode,
@@ -60,6 +62,7 @@ export const TopNav: React.FC<TopNavProps> = ({
   onReplayBloom,
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [copiedCode, setCopiedCode] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   // Close dropdown on outside click
@@ -100,18 +103,6 @@ export const TopNav: React.FC<TopNavProps> = ({
       <header className="sticky top-0 z-40 w-full bg-white/85 backdrop-blur-md border-b border-rose-100/80 transition-all font-sans-custom py-2 px-4 shadow-2xs">
         <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
           <div className="flex items-center gap-2 min-w-0">
-            <button
-              type="button"
-              onClick={() => {
-                onToggleReceiverMode();
-                onNavigate('portal');
-              }}
-              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-200/80 text-xs font-semibold transition-all cursor-pointer shadow-2xs"
-              title="Return to Home Portal"
-            >
-              <Home className="w-3.5 h-3.5 text-rose-600" />
-              <span className="hidden sm:inline">Home</span>
-            </button>
             <span className="text-base select-none">🌹</span>
             <div className="truncate">
               <span className="font-cormorant text-base sm:text-lg font-bold text-rose-950 truncate">
@@ -176,25 +167,28 @@ export const TopNav: React.FC<TopNavProps> = ({
               Monthsary
             </span>
           </button>
-
-          {/* Dedicated Home icon button right next to brand */}
-          <button
-            type="button"
-            onClick={() => onNavigate('portal')}
-            className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-medium transition-all cursor-pointer ${
-              currentRoute === 'portal'
-                ? 'bg-rose-100/90 text-rose-950 font-semibold border border-rose-200 shadow-2xs'
-                : 'text-stone-600 hover:text-rose-950 hover:bg-rose-50 border border-transparent'
-            }`}
-            title="Go to Home Portal"
-          >
-            <Home className="w-3.5 h-3.5 text-rose-600" />
-            <span className="hidden sm:inline">Home</span>
-          </button>
         </div>
 
         {/* Primary Right Actions & 3-Bar Hamburger Menu */}
         <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+          {/* Quick Letter Code badge with 1-click copy */}
+          {shareCode && (
+            <button
+              type="button"
+              onClick={async () => {
+                await navigator.clipboard.writeText(shareCode);
+                setCopiedCode(true);
+                setTimeout(() => setCopiedCode(false), 2000);
+              }}
+              className="hidden lg:inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold text-rose-900 bg-rose-50 hover:bg-rose-100 rounded-xl border border-rose-200/90 transition-all cursor-pointer shadow-2xs"
+              title="5-Character Letter Code for recipients (Click to copy)"
+            >
+              <KeyRound className="w-3.5 h-3.5 text-rose-500" />
+              <span>Code: <span className="tracking-wider">{shareCode}</span></span>
+              {copiedCode ? <Check className="w-3 h-3 text-emerald-600 ml-0.5" /> : null}
+            </button>
+          )}
+
           {/* Quick Publish & Share button */}
           <button
             type="button"

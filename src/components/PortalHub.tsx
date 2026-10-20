@@ -125,7 +125,7 @@ export const PortalHub: React.FC<PortalHubProps> = ({
           </button>
         </div>
 
-        {/* CARD 2: OPEN WITH SECRET PASSKEY */}
+        {/* CARD 2: OPEN WITH 5-CHARACTER LETTER CODE */}
         <div className="relative group flex flex-col justify-between p-6 sm:p-7 rounded-3xl bg-white/95 backdrop-blur-md border border-amber-200/90 hover:border-amber-300 shadow-sm hover:shadow-xl hover:shadow-amber-100/50 transition-all duration-300 hover:-translate-y-1">
           {/* Subtle Top Accent Glow */}
           <div className="absolute top-0 inset-x-8 h-1 bg-gradient-to-r from-amber-400 via-amber-500 to-rose-400 rounded-b-full opacity-80" />
@@ -141,22 +141,24 @@ export const PortalHub: React.FC<PortalHubProps> = ({
             </div>
 
             <h2 className="font-cormorant text-2xl sm:text-3xl font-bold text-stone-900 mb-2.5">
-              Open with Passkey
+              Open with Letter Code
             </h2>
 
             <p className="text-xs text-stone-600 leading-relaxed mb-6">
-              Received a secret anniversary code or passcode from your love? Enter your passkey to unlock the private love letter and blooming rose.
+              Received a 5-character letter code from your love? Enter your code to unlock the private love letter and blooming rose across any device.
             </p>
 
             <div className="p-3 rounded-xl bg-amber-50/50 border border-amber-100/80 mb-6 text-xs text-stone-700 space-y-1">
               <div className="flex items-center justify-between text-[11px] text-stone-500">
-                <span>Passkey Protection</span>
-                <span className="font-medium text-amber-700">
-                  {activeData.passcode?.enabled ? 'Protected' : 'Accessible'}
+                <span>Unique Letter Code</span>
+                <span className="font-medium text-amber-700 font-mono">
+                  5-Characters
                 </span>
               </div>
               <div className="text-stone-600 italic truncate text-[11px]">
-                {activeData.passcode?.hint ? `Hint: ${activeData.passcode.hint}` : 'Enter 4-digit code to reveal'}
+                {activeData.passcode?.enabled
+                  ? 'Includes 4-digit secret passcode prompt'
+                  : 'Instant romantic unlock'}
               </div>
             </div>
           </div>
@@ -167,7 +169,7 @@ export const PortalHub: React.FC<PortalHubProps> = ({
             className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-stone-900 to-stone-800 hover:from-black hover:to-stone-900 text-amber-300 font-semibold text-xs tracking-wide shadow-md shadow-stone-300 active:scale-[0.98] transition-all cursor-pointer"
           >
             <KeyRound className="w-4 h-4 text-amber-400" />
-            <span>Enter Passkey to Unlock</span>
+            <span>Enter Letter Code &amp; Open</span>
           </button>
         </div>
 

@@ -7,10 +7,14 @@ const SITES_PREFIX = 'rosebloom_user_sites_';
 const ACTIVE_SITE_PREFIX = 'rosebloom_active_site_';
 const SHARED_REGISTRY_KEY = 'rosebloom_shared_sites_registry';
 
-// Helper to generate clean, memorable receiver passkeys e.g. "ROSE-4821"
-function generateShareCode(): string {
-  const digits = Math.floor(1000 + Math.random() * 9000);
-  return `ROSE-${digits}`;
+// Helper to generate a clean, memorable 5-character recipient code e.g. "R8K2M"
+export function generateShareCode(): string {
+  const chars = '23456789ABCDEFGHJKMNPQRSTUVWXYZ';
+  let code = '';
+  for (let i = 0; i < 5; i++) {
+    code += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return code;
 }
 
 function generateReceiverToken(): string {
@@ -28,7 +32,7 @@ const DEFAULT_LIAM_SITES: UserSiteProject[] = [
     updatedAt: '2024-10-24',
     ownerId: 'usr_maya_love_01',
     ownerEmail: 'mikuchanmawaifu@gmail.com',
-    shareCode: 'ROSE-1024',
+    shareCode: 'ROSE1',
     receiverToken: 'rec_maya_forever',
     isPrivate: true,
     data: DEFAULT_COUPLE_DATA,
@@ -42,7 +46,7 @@ const DEFAULT_LIAM_SITES: UserSiteProject[] = [
     updatedAt: '2025-04-14',
     ownerId: 'usr_maya_love_01',
     ownerEmail: 'mikuchanmawaifu@gmail.com',
-    shareCode: 'ROSE-0414',
+    shareCode: 'MAYA5',
     receiverToken: 'rec_maya_spring',
     isPrivate: true,
     data: {
@@ -211,7 +215,7 @@ class SiteService {
         this.saveSites();
       }
 
-      // Ensure every site has ownerId, shareCode, and receiverToken
+      // Ensure every site has ownerId, 5-character shareCode, and receiverToken
       let updatedMetadata = false;
       this.sites.forEach((site) => {
         if (!site.ownerId) {
@@ -219,8 +223,14 @@ class SiteService {
           site.ownerEmail = this.currentUserEmail;
           updatedMetadata = true;
         }
-        if (!site.shareCode) {
-          site.shareCode = generateShareCode();
+        if (!site.shareCode || site.shareCode.length !== 5) {
+          if (site.shareCode === 'ROSE-1024') {
+            site.shareCode = 'ROSE1';
+          } else if (site.shareCode === 'ROSE-0414') {
+            site.shareCode = 'MAYA5';
+          } else {
+            site.shareCode = generateShareCode();
+          }
           updatedMetadata = true;
         }
         if (!site.receiverToken) {

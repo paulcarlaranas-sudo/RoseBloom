@@ -43,6 +43,18 @@ export const MySitesPage: React.FC<MySitesPageProps> = ({
   const [newDate, setNewDate] = useState<string>('');
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [copiedCodeId, setCopiedCodeId] = useState<string | null>(null);
+
+  const handleCopyCode = async (site: UserSiteProject) => {
+    const code = site.shareCode || 'ROSE1';
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopiedCodeId(site.id);
+      setTimeout(() => setCopiedCodeId(null), 2500);
+    } catch {
+      // Fallback
+    }
+  };
 
   const handleCreateSite = (e: React.FormEvent) => {
     e.preventDefault();
@@ -199,24 +211,35 @@ export const MySitesPage: React.FC<MySitesPageProps> = ({
                   </div>
                 </div>
 
-                {/* Receiver Passkey Indicator */}
-                <div className="p-2 rounded-xl bg-rose-50/70 border border-rose-100 flex items-center justify-between text-xs mb-3">
+                {/* Unique 5-Character Letter Code Badge */}
+                <div className="p-2.5 rounded-xl bg-gradient-to-r from-rose-50/80 to-amber-50/60 border border-rose-100 flex items-center justify-between text-xs mb-3">
                   <div className="flex items-center gap-1.5 text-stone-700">
                     <KeyRound className="w-3.5 h-3.5 text-rose-500" />
-                    <span className="text-[11px]">Passkey:</span>
-                    <span className="font-mono font-semibold text-rose-800 text-[11px]">
-                      {site.shareCode || 'ROSE-1024'}
+                    <span className="text-[11px] font-medium text-stone-600">Letter Code:</span>
+                    <span className="font-mono font-bold text-rose-900 bg-white/90 border border-rose-200/80 px-2 py-0.5 rounded text-xs tracking-wider">
+                      {site.shareCode || 'ROSE1'}
                     </span>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => handleCopyReceiverLink(site)}
-                    className="text-[10px] font-semibold text-rose-600 hover:text-rose-800 flex items-center gap-1 cursor-pointer"
-                    title="Copy private link for recipient"
-                  >
-                    {isCopied ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
-                    <span>{isCopied ? 'Copied Link' : 'Copy Link'}</span>
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => handleCopyCode(site)}
+                      className="text-[10px] font-semibold text-rose-700 hover:text-rose-900 flex items-center gap-1 cursor-pointer bg-white px-2 py-1 rounded-md border border-rose-200/80 shadow-2xs hover:bg-rose-50 transition-colors"
+                      title="Copy 5-character letter code"
+                    >
+                      {copiedCodeId === site.id ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
+                      <span>{copiedCodeId === site.id ? 'Copied!' : 'Copy Code'}</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleCopyReceiverLink(site)}
+                      className="text-[10px] font-semibold text-stone-600 hover:text-stone-900 flex items-center gap-1 cursor-pointer px-1 py-1"
+                      title="Copy full link for recipient"
+                    >
+                      {isCopied ? <Check className="w-3 h-3 text-emerald-600" /> : <Share2 className="w-3 h-3" />}
+                      <span>{isCopied ? 'Link Copied' : 'Link'}</span>
+                    </button>
+                  </div>
                 </div>
 
                 {/* Metadata */}
