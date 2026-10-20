@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Heart, Sparkles, Lock, Mail, User, Eye, EyeOff, ArrowRight, ShieldCheck } from 'lucide-react';
+import { Heart, Sparkles, Lock, Mail, User, Eye, EyeOff, ArrowRight, ShieldCheck, AlertCircle, ExternalLink } from 'lucide-react';
 import { authService } from '../services/authService';
 import { GlowingDustOverlay } from '../components/GlowingDustOverlay';
 import { GoogleSignInModal } from '../components/GoogleSignInModal';
@@ -144,9 +144,39 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onSignedIn }) => {
 
         {/* Error message */}
         {error && (
-          <div className="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-700 leading-tight">
-            {error}
-          </div>
+          error.includes('unauthorized-domain') ? (
+            <div className="mb-4 p-3.5 rounded-2xl bg-amber-50 border border-amber-200 text-xs text-amber-950 space-y-2">
+              <div className="font-semibold text-amber-900 flex items-center gap-1.5">
+                <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
+                <span>Domain Not Authorized in Firebase Yet</span>
+              </div>
+              <p className="text-[11px] text-amber-800 leading-relaxed">
+                Your third-party domain <strong className="font-mono">{window.location.hostname}</strong> needs to be added to Authorized Domains in the Firebase Console.
+              </p>
+              <div className="pt-1 flex items-center justify-between">
+                <a
+                  href="https://console.firebase.google.com/project/skilful-theorem-5v4kj/authentication/settings"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 font-semibold text-amber-800 hover:text-amber-950 underline underline-offset-2 text-[11px]"
+                >
+                  <span>Open Firebase Settings</span>
+                  <ExternalLink className="w-3 h-3" />
+                </a>
+                <button
+                  type="button"
+                  onClick={() => setShowGoogleModal(true)}
+                  className="text-xs text-rose-700 font-medium hover:underline cursor-pointer"
+                >
+                  Enter Account Manually →
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-700 leading-tight">
+              {error}
+            </div>
+          )
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4 text-xs font-sans-custom">

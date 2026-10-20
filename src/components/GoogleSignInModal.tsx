@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, UserPlus, Check, Trash2, Shield, ArrowRight, Sparkles } from 'lucide-react';
+import { X, UserPlus, Check, Trash2, Shield, ArrowRight, Sparkles, AlertCircle, ExternalLink, Copy } from 'lucide-react';
 import { authService, parseJwt } from '../services/authService';
 import { SavedGoogleAccount, UserProfile } from '../types';
 
@@ -53,6 +53,7 @@ export const GoogleSignInModal: React.FC<GoogleSignInModalProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [gisAvailable, setGisAvailable] = useState<boolean>(false);
+  const [copiedDomain, setCopiedDomain] = useState<boolean>(false);
 
   const googleBtnContainerRef = useRef<HTMLDivElement>(null);
 
@@ -127,6 +128,8 @@ export const GoogleSignInModal: React.FC<GoogleSignInModalProps> = ({
       const msg = err instanceof Error ? err.message : 'Google sign-in cancelled or failed.';
       if (msg.includes('popup-closed-by-user')) {
         setError('Google sign-in popup was closed.');
+      } else if (msg.includes('unauthorized-domain')) {
+        setError(`unauthorized-domain:${window.location.hostname}`);
       } else {
         setError(msg);
       }
@@ -246,9 +249,67 @@ export const GoogleSignInModal: React.FC<GoogleSignInModalProps> = ({
         {/* Modal Body */}
         <div className="p-6">
           {error && (
-            <div className="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-800 leading-tight">
-              {error}
-            </div>
+            error.startsWith('unauthorized-domain:') ? (
+              <div className="mb-4 p-4 rounded-2xl bg-amber-50/90 border border-amber-200 text-xs text-amber-950 space-y-2.5">
+                <div className="flex items-start gap-2">
+                  <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                  <div>
+                    <div className="font-bold text-amber-900">Third-Party Domain Authorization Needed</div>
+                    <p className="text-[11px] text-amber-800/90 mt-0.5 leading-relaxed">
+                      Firebase blocks Google sign-in on new third-party domains by default until added to <strong>Authorized Domains</strong> in the Firebase Console.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="p-2.5 bg-white/95 rounded-xl border border-amber-200 flex items-center justify-between gap-2">
+                  <div className="min-w-0">
+                    <div className="text-[10px] text-stone-400 uppercase font-bold tracking-wider">Your Domain:</div>
+                    <div className="font-mono text-xs font-semibold text-stone-900 truncate">
+                      {window.location.hostname}
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard.writeText(window.location.hostname);
+                      setCopiedDomain(true);
+                      setTimeout(() => setCopiedDomain(false), 2000);
+                    }}
+                    className="flex items-center gap-1 text-[11px] font-semibold text-amber-800 bg-amber-100 hover:bg-amber-200/90 px-2.5 py-1 rounded-lg cursor-pointer transition-colors shrink-0"
+                  >
+                    {copiedDomain ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                    <span>{copiedDomain ? 'Copied!' : 'Copy'}</span>
+                  </button>
+                </div>
+
+                <div className="flex items-center justify-between pt-1 gap-2 flex-wrap">
+                  <a
+                    href="https://console.firebase.google.com/project/skilful-theorem-5v4kj/authentication/settings"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-semibold text-xs shadow-xs transition-colors"
+                  >
+                    <span>Add in Firebase Console</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setError(null);
+                      setView('new_account');
+                    }}
+                    className="text-xs text-amber-900 font-semibold underline underline-offset-2 hover:text-amber-700 cursor-pointer"
+                  >
+                    Or Enter Details Manually →
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-800 leading-tight">
+                {error}
+              </div>
+            )
           )}
 
           {/* GIS native button container if client ID is configured */}
