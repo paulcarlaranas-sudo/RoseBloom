@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFF5F7" />
+      <stop offset="50%" stop-color="#FDE8ED" />
+      <stop offset="100%" stop-color="#F9D4DC" />
+    </linearGradient>
+    <linearGradient id="rose" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FB7185" />
+      <stop offset="50%" stop-color="#F43F5E" />
+      <stop offset="100%" stop-color="#E11D48" />
+    </linearGradient>
+    <linearGradient id="leaf" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#86EFAC" />
+      <stop offset="100%" stop-color="#16A34A" />
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#BE185D" flood-opacity="0.18" />
+    </filter>
+  </defs>
+
+  <!-- Background Canvas -->
+  <rect width="512" height="512" rx="128" fill="url(#bg)" />
+
+  <!-- Botanical Leaf Accents -->
+  <path d="M190 350 C 140 370, 120 420, 160 440 C 200 440, 230 400, 210 360 Z" fill="url(#leaf)" opacity="0.85" />
+  <path d="M322 350 C 372 370, 392 420, 352 440 C 312 440, 282 400, 302 360 Z" fill="url(#leaf)" opacity="0.85" />
+
+  <!-- Rose Stem -->
+  <path d="M256 310 Q 254 390 256 460" stroke="#15803D" stroke-width="16" stroke-linecap="round" fill="none" />
+
+  <!-- Rose Petals Layered Emblem -->
+  <g filter="url(#shadow)">
+    <!-- Outer Petals -->
+    <path d="M256 120 C 180 120, 130 180, 150 250 C 165 300, 220 330, 256 330 C 292 330, 347 300, 362 250 C 382 180, 332 120, 256 120 Z" fill="url(#rose)" />
+    <!-- Overlapping Petal Curves -->
+    <path d="M256 150 C 200 150, 175 195, 190 240 C 205 280, 240 295, 256 295 C 272 295, 307 280, 322 240 C 337 195, 312 150, 256 150 Z" fill="#FDA4AF" />
+    <path d="M256 170 C 220 170, 205 205, 215 235 C 225 260, 245 270, 256 270 C 267 270, 287 260, 297 235 C 307 205, 292 170, 256 170 Z" fill="#FB7185" />
+    <!-- Rose Heart Core -->
+    <circle cx="256" cy="220" r="28" fill="#E11D48" />
+    <path d="M246 215 Q 256 205 266 215 Q 256 225 246 215" fill="#FFE4E6" />
+  </g>
+
+  <!-- Golden Stardust Sparkles -->
+  <circle cx="150" cy="140" r="8" fill="#FBBF24" opacity="0.8" />
+  <circle cx="360" cy="130" r="10" fill="#FBBF24" opacity="0.75" />
+  <circle cx="380" cy="290" r="6" fill="#FBBF24" opacity="0.6" />
+</svg>

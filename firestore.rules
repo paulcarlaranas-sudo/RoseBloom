@@ -1,0 +1,62 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default deny catch-all safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // Connection testing endpoint
+    match /test/{docId} {
+      allow get: if true;
+    }
+
+    // User profiles - only the account owner can access their profile
+    match /users/{userId} {
+      allow get: if isValidId(userId) && isOwner(userId);
+      allow create: if isValidId(userId) && isOwner(userId) && incoming().id == userId;
+      allow update: if isValidId(userId) && isOwner(userId);
+      allow delete: if false;
+
+      // User's romantic love letter sites
+      match /sites/{siteId} {
+        allow get: if isValidId(siteId) && isOwner(userId);
+        allow list: if isOwner(userId);
+        allow create: if isValidId(siteId) && isOwner(userId) && incoming().ownerId == userId;
+        allow update: if isValidId(siteId) && isOwner(userId) && existing().ownerId == userId;
+        allow delete: if isValidId(siteId) && isOwner(userId) && existing().ownerId == userId;
+      }
+    }
+
+    // Shared sites for recipient mode (read by share code or token)
+    match /shared_sites/{shareKey} {
+      allow get: if isValidId(shareKey);
+      allow list: if false;
+      allow create: if isValidId(shareKey) && isSignedIn() && incoming().ownerId == request.auth.uid;
+      allow update: if isValidId(shareKey) && isSignedIn() && existing().ownerId == request.auth.uid;
+      allow delete: if isValidId(shareKey) && isSignedIn() && existing().ownerId == request.auth.uid;
+    }
+  }
+}
